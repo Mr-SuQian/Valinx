@@ -20,7 +20,10 @@
 # 1. 初始化 Git
 git init
 
-# 2. 将所有代码加入缓存 (排除 .gitignore 中的文件)
+# 2. 切换主分支名为 main (GitHub 默认)
+git branch -M main
+
+# 3. 将所有代码加入缓存
 git add .
 
 # 3. 提交到本地仓库
@@ -53,6 +56,14 @@ git push -u origin main
 ### 方式 2：Docker 自动拉取 (专业)
 我们将配置一个 `docker-compose.yml`。服务器只需要运行 `docker-compose up -d --pull always`，它就会自动从镜像库拉取最新的 Valinx 镜像。
 
----
+## 第五步：配置 GitHub Secrets (权限设置)
 
-**您可以先执行第一步和第二步。** 如果您在推送时遇到权限问题（如需要 SSH Key），请告诉我，我会教您如何生成并配置。
+为了让 GitHub 能够安全地连接您的服务器，您需要在 GitHub 仓库中设置“秘密变量”：
+
+1. **进入设置**: 在 GitHub 页面点击 `Settings` -> `Secrets and variables` -> `Actions`。
+2. **新增 Secret**: 点击 `New repository secret`，依次添加：
+   - `SERVER_HOST`: 您的服务器公网 IP。
+   - `SERVER_USER`: 登录用户名（通常是 `root`）。
+   - `SERVER_SSH_KEY`: 您的私钥（`~/.ssh/id_rsa` 的内容）。
+
+完成这些后，下次 `git push` 就会自动触发部署！

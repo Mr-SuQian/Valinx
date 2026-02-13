@@ -1,0 +1,48 @@
+name: Deploy Valinx Java Engine
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    name: 🚀 部署到腾讯云
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 2. 设置 JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: 3. 编译打包 (ShadowJar)
+        run: chmod +x gradlew && ./gradlew shadowJar
+
+      - name: 4. 传输到服务器 (SCP)
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "build/libs/Valinx-Engine.jar"
+          target: "/root/valinx/app"
+          strip_components: 2
+
+      - name: 5. 远程执行重启指令 (SSH)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /root/valinx
+            # 停止旧进程（如果有）
+            fuser -k 3001/tcp || true 
+            # 运行新版本 (这里建议后续改用 Docker 启动)
+            nohup java -jar app/Valinx-Engine.jar > valinx.log 2>&1 &
+            echo "Valinx Engine restarted successfully."
