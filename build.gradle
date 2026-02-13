@@ -7,6 +7,12 @@ plugins {
 group = 'com.valinx'
 version = '1.0.0-SNAPSHOT'
 
+shadowJar {
+    archiveBaseName.set('Valinx-Engine')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+}
+
 repositories {
     mavenCentral()
 }
