@@ -21,7 +21,10 @@ jobs:
           cache: 'gradle'
 
       - name: 3. 编译打包 (ShadowJar)
-        run: gradle shadowJar
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: 8.5
+          arguments: shadowJar
 
       - name: 4. 传输到服务器 (SCP)
         uses: appleboy/scp-action@v0.1.7
