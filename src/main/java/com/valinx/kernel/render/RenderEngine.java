@@ -1,6 +1,7 @@
 package com.valinx.kernel.render;
 
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.ScreenshotType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
