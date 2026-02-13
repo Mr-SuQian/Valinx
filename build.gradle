@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1' // For building fat JARs
+}
+
+group = 'com.valinx'
+version = '1.0.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Communication & Network
+    implementation 'io.netty:netty-all:4.1.100.Final'
+    implementation 'org.java-websocket:Java-WebSocket:1.5.4'
+
+    // Rendering Engine (Headless Chrome)
+    implementation 'com.microsoft.playwright:playwright:1.41.0'
+
+    // Data Processing & Logic
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2' // Java Time support
+    
+    // Database
+    implementation 'org.postgresql:postgresql:42.6.0'
+    implementation 'com.zaxxer:HikariCP:5.0.1' // High-perf connection pool
+
+    // Logging
+    implementation 'ch.qos.logback:logback-classic:1.4.11'
+    
+    // Utilities
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    
+    // Testing
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+application {
+    mainClass = 'com.valinx.ProjectValinx'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// ShadowJar configuration to build a runnable jar
+shadowJar {
+    archiveBaseName.set('Valinx-Engine')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+}
