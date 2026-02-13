@@ -26,26 +26,32 @@ jobs:
           gradle-version: 8.5
           arguments: shadowJar
 
-      - name: 4. 传输到服务器 (SCP)
+      - name: 4. 压缩打包 (Optimize Speed)
+        run: tar -czf release.tar.gz -C build/libs Valinx-Engine.jar
+
+      - name: 5. 传输压缩包 (SCP)
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "build/libs/Valinx-Engine.jar"
+          source: "release.tar.gz"
           target: "/root/valinx/app"
-          strip_components: 2
 
-      - name: 5. 远程执行重启指令 (SSH)
+      - name: 6. 远程解压与重启 (SSH)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            cd /root/valinx/app
+            tar -xzf release.tar.gz
+            rm release.tar.gz
+            
             cd /root/valinx
-            # 停止旧进程（如果有）
+            # 停止旧进程
             fuser -k 3001/tcp || true 
-            # 运行新版本 (这里建议后续改用 Docker 启动)
+            # 运行新版本
             nohup java -jar app/Valinx-Engine.jar > valinx.log 2>&1 &
-            echo "Valinx Engine restarted successfully."
+            echo "Valinx Engine optimized & restarted."
