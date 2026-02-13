@@ -21,7 +21,7 @@ jobs:
           cache: 'gradle'
 
       - name: 3. 编译打包 (ShadowJar)
-        run: chmod +x gradlew && ./gradlew shadowJar
+        run: gradle shadowJar
 
       - name: 4. 传输到服务器 (SCP)
         uses: appleboy/scp-action@v0.1.7
